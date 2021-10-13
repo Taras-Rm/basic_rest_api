@@ -13,19 +13,25 @@ func CreatePost(c *gin.Context) {
 	var user Models.User
 
 	id := c.Params.ByName("id")
-	c.BindJSON(&post)
-	var err = Config.DB.Where("id = ?", id).First(&user).Error
+	err := c.BindJSON(&post)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "User is missing"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+		return
 	}
 
-	Config.DB.Model(&user).Association("posts").Append(&post)
-
+	err = Config.DB.Where("id = ?", id).First(&user).Error
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, post)
+		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return
 	}
+
+	err = Config.DB.Model(&user).Association("posts").Append(&post).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, post)
 }
 
 func GetPostsByUserId(c *gin.Context) {
@@ -35,40 +41,52 @@ func GetPostsByUserId(c *gin.Context) {
 
 	err := Config.DB.Where("user_ref = ?", id).Find(&posts).Error
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, posts)
+		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return
 	}
+
+	c.JSON(http.StatusOK, posts)
 }
 
 func UpdatePost(c *gin.Context) {
 	var post Models.Post
-
 	id := c.Params.ByName("id")
 
-	var err = Config.DB.Where("id = ?", id).First(&post).Error
+	err := Config.DB.Where("id = ?", id).First(&post).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "Post is missing"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Post not found"})
+		return
 	}
-	c.BindJSON(&post)
-	Config.DB.Save(post)
+	err = c.BindJSON(&post)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+		return
+	}
 
+	err = Config.DB.Save(post).Error
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		c.JSON(http.StatusOK, post)
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
+
+	c.JSON(http.StatusOK, post)
 }
 
 func DeletePost(c *gin.Context) {
 	var post Models.Post
 
 	id := c.Params.ByName("id")
-	err := Config.DB.Where("id = ?", id).Delete(&post).Error
+	err := Config.DB.Where("id = ?", id).First(&post).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Post not found"})
+		return
+	}
 
+	err = Config.DB.Where("id = ?", id).Delete(&post).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Post with that id is missing"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"id" + id: "is deleted"})
+		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{"id" + id: "is deleted"})
 }
