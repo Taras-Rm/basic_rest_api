@@ -4,28 +4,18 @@ import (
 	"fmt"
 
 	"github.com/Taras-Rm/basic_rest_api/Config"
-	"github.com/Taras-Rm/basic_rest_api/Models"
 
 	"github.com/Taras-Rm/basic_rest_api/Controllers"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-
-	"github.com/jinzhu/gorm"
 )
 
-var err error
-
 func main() {
-	// open DB
-	Config.DB, err = gorm.Open("mysql", Config.DbURL)
+	err := Config.DBConnect()
 	// catch errors
 	if err != nil {
 		fmt.Println("Status:", err)
 	}
-	// close DB
-	defer Config.DB.Close()
-
-	Config.DB.AutoMigrate(&Models.User{}, &Models.Post{})
 
 	route := gin.Default()
 
