@@ -1,4 +1,5 @@
 app:
-  username: "root"
-  pass: "1tab238B"
-  dbname: "goapp"
+  username: "postgres"
+  pass: "post1235"
+  dbname: "goapi"
+  host: "localhost"

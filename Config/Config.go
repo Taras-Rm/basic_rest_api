@@ -17,7 +17,7 @@ type App struct {
 	UserName string `yaml:"username"`
 	Pass     string `yaml:"pass"`
 	DbName   string `yaml:"dbname"`
-	Host     string `yaml:"localhost"`
+	Host     string `yaml:"host"`
 }
 
 func InitConfig() {

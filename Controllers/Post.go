@@ -1,6 +1,7 @@
 package Controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Taras-Rm/basic_rest_api/Config"
@@ -24,10 +25,12 @@ func CreatePost(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 		return
 	}
+	fmt.Println(user)
 
-	err = Config.DB.Model(&user).Association("posts").Append(&post).Error
+	err = Config.DB.Model(&user).Association("Posts").Append(&post)
+	fmt.Println(err)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"messageAsoc": err.Error()})
 		return
 	}
 
