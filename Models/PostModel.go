@@ -1,8 +1,9 @@
 package Models
 
+import "github.com/jinzhu/gorm"
+
 type Post struct {
-	Id uint `json:"id"`
-	//gorm.Model
+	gorm.Model
 	Title   string `json:"title"`
 	Text    string `json:"text"`
 	UserRef uint
