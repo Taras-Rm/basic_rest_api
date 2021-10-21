@@ -85,6 +85,11 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 		return
 	}
+	err = Config.DB.Select("Posts").Delete(&user).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
 	err = Config.DB.Where("id = ?", id).Delete(&user).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
