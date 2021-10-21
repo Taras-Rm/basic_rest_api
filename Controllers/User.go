@@ -12,7 +12,7 @@ import (
 func GetUsers(c *gin.Context) {
 	var users []Models.User
 	// SELECT * FROM users
-	err := Config.DB.Find(&users).Error
+	err := Config.DB.Preload("Posts").Find(&users).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "No users"})
 		return
@@ -44,7 +44,7 @@ func GetUserByID(c *gin.Context) {
 	var user Models.User
 	id := c.Params.ByName("id")
 	// Get first matched record
-	err := Config.DB.Where("id = ?", id).First(&user).Error
+	err := Config.DB.Preload("Posts").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 		return
