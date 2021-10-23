@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 
+	api "github.com/Taras-Rm/basic_rest_api/Api"
 	"github.com/Taras-Rm/basic_rest_api/Config"
+	repositories "github.com/Taras-Rm/basic_rest_api/Repositories"
+	services "github.com/Taras-Rm/basic_rest_api/Services"
 
 	"github.com/Taras-Rm/basic_rest_api/Controllers"
 	"github.com/gin-gonic/gin"
@@ -11,7 +14,7 @@ import (
 )
 
 func main() {
-	err := Config.DBConnect()
+	db, err := Config.DBConnect()
 	// catch errors
 	if err != nil {
 		fmt.Println("Status:", err)
@@ -19,14 +22,9 @@ func main() {
 
 	route := gin.Default()
 
-	grp1 := route.Group("/users")
-	{
-		grp1.GET("/", Controllers.GetUsers)
-		grp1.POST("/", Controllers.CreateUser)
-		grp1.GET("/:id", Controllers.GetUserByID)
-		grp1.PUT("/:id", Controllers.UpdateUser)
-		grp1.DELETE("/:id", Controllers.DeleteUser)
-	}
+	userRepository := repositories.NewUserRepository(db)
+	userService := services.NewUserService(userRepository)
+	api.InjectUser(route, userService)
 
 	grp2 := route.Group("/posts")
 	{
