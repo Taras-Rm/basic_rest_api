@@ -8,7 +8,6 @@ import (
 	repositories "github.com/Taras-Rm/basic_rest_api/Repositories"
 	services "github.com/Taras-Rm/basic_rest_api/Services"
 
-	"github.com/Taras-Rm/basic_rest_api/Controllers"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,13 +25,9 @@ func main() {
 	userService := services.NewUserService(userRepository)
 	api.InjectUser(route, userService)
 
-	grp2 := route.Group("/posts")
-	{
-		grp2.POST("/:id", Controllers.CreatePost)
-		grp2.GET("/:id", Controllers.GetPostsByUserId)
-		grp2.PUT("/:id", Controllers.UpdatePost)
-		grp2.DELETE("/:id", Controllers.DeletePost)
-	}
+	postRepository := repositories.NewPostRepository(db)
+	postService := services.NewPostService(postRepository, userRepository)
+	api.InjectPost(route, postService)
 
 	//running
 	route.Run()
