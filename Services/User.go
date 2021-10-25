@@ -9,7 +9,7 @@ type UserService interface {
 	GetUsers() ([]Models.User, error)
 	CreateUser(user *Models.User) (*Models.User, error)
 	GetUserByID(id uint) (*Models.User, error)
-	UpdateUser(id uint, user *Models.User) (*Models.User, error)
+	UpdateUser(id uint, user *Models.User) error
 	DeleteUser(id uint) error
 }
 
@@ -45,16 +45,16 @@ func (s *userService) GetUserByID(id uint) (*Models.User, error) {
 	return res, err
 }
 
-func (s *userService) UpdateUser(id uint, user *Models.User) (*Models.User, error) {
+func (s *userService) UpdateUser(id uint, user *Models.User) error {
 	_, err := s.GetUserByID(id)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	res, err := s.userRepository.UpdateUser(id, user)
+	err = s.userRepository.UpdateUser(id, user)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return res, err
+	return nil
 }
 
 func (s *userService) DeleteUser(id uint) error {

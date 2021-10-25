@@ -9,7 +9,7 @@ type UserRepository interface {
 	GetUsers() ([]Models.User, error)
 	CreateUser(user *Models.User) (*Models.User, error)
 	GetUserByID(id uint) (*Models.User, error)
-	UpdateUser(id uint, user *Models.User) (*Models.User, error)
+	UpdateUser(id uint, user *Models.User) error
 	DeleteUser(id uint) error
 	DeleteUserPosts(id uint) error
 }
@@ -39,14 +39,14 @@ func (r *userRepository) GetUserByID(id uint) (*Models.User, error) {
 	return user, res.Error
 }
 
-func (r *userRepository) UpdateUser(id uint, user *Models.User) (*Models.User, error) {
+func (r *userRepository) UpdateUser(id uint, user *Models.User) error {
 	res := r.db.Model(&user).Where("id = ?", id).Updates(map[string]interface{}{
 		"Name":    user.Name,
 		"Email":   user.Email,
 		"Phone":   user.Phone,
 		"Address": user.Address,
 	})
-	return user, res.Error
+	return res.Error
 }
 
 func (r *userRepository) DeleteUser(id uint) error {

@@ -63,7 +63,6 @@ func userGet(userService services.UserService) gin.HandlerFunc {
 	}
 }
 
-// ?? не приходить ід
 func userUpdate(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user *Models.User
@@ -75,14 +74,14 @@ func userUpdate(userService services.UserService) gin.HandlerFunc {
 		}
 
 		userId, err := strconv.ParseUint(id, 10, 64)
-		res, err := userService.UpdateUser(uint(userId), user)
+		err = userService.UpdateUser(uint(userId), user)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, gin.H{"message": "User is updated"})
 	}
 }
 
