@@ -23,6 +23,10 @@ func postCreate(postService services.PostService) gin.HandlerFunc {
 
 		id := c.Params.ByName("id")
 		userId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+			return
+		}
 
 		err = c.BindJSON(&post)
 		if err != nil {
@@ -42,7 +46,12 @@ func postCreate(postService services.PostService) gin.HandlerFunc {
 func postGetByUserId(postService services.PostService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Params.ByName("id")
+
 		userId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+			return
+		}
 
 		posts, err := postService.GetPostsByUserId(uint(userId))
 		if err != nil {
@@ -83,7 +92,12 @@ func postUpdate(postService services.PostService) gin.HandlerFunc {
 func postDelete(postService services.PostService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Params.ByName("id")
+
 		postId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+			return
+		}
 
 		err = postService.DeletePost(uint(postId))
 		if err != nil {
