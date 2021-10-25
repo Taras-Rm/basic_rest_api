@@ -8,7 +8,7 @@ import (
 type PostRepository interface {
 	CreatePost(user *Models.User, post *Models.Post) (*Models.Post, error)
 	GetPostsByUserId(id uint) ([]Models.Post, error)
-	UpdatePost(id uint, post *Models.Post) (*Models.Post, error)
+	UpdatePost(id uint, post *Models.Post) error
 	DeletePost(id uint) error
 	GetPostById(id uint) (*Models.Post, error)
 }
@@ -32,12 +32,12 @@ func (r *postRepository) GetPostsByUserId(id uint) ([]Models.Post, error) {
 	return posts, res.Error
 }
 
-func (r *postRepository) UpdatePost(id uint, post *Models.Post) (*Models.Post, error) {
+func (r *postRepository) UpdatePost(id uint, post *Models.Post) error {
 	res := r.db.Model(post).Where("id = ?", id).Updates(map[string]interface{}{
 		"title": post.Title,
 		"text":  post.Text,
 	})
-	return post, res.Error
+	return res.Error
 }
 
 func (r *postRepository) DeletePost(id uint) error {

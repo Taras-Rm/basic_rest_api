@@ -59,6 +59,10 @@ func postUpdate(postService services.PostService) gin.HandlerFunc {
 
 		id := c.Params.ByName("id")
 		postId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+			return
+		}
 
 		err = c.BindJSON(&post)
 		if err != nil {
@@ -66,12 +70,13 @@ func postUpdate(postService services.PostService) gin.HandlerFunc {
 			return
 		}
 
-		res, err := postService.UpdatePost(uint(postId), post)
+		err = postService.UpdatePost(uint(postId), post)
+
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"message": "Server error", "error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, gin.H{"message": "Post is updated"})
 	}
 }
 

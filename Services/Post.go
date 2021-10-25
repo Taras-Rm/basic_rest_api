@@ -10,7 +10,7 @@ import (
 type PostService interface {
 	CreatePost(id uint, post *Models.Post) (*Models.Post, error)
 	GetPostsByUserId(id uint) ([]Models.Post, error)
-	UpdatePost(id uint, post *Models.Post) (*Models.Post, error)
+	UpdatePost(id uint, post *Models.Post) error
 	DeletePost(id uint) error
 }
 
@@ -50,16 +50,16 @@ func (s *postService) GetPostsByUserId(id uint) ([]Models.Post, error) {
 	return res, err
 }
 
-func (s *postService) UpdatePost(id uint, post *Models.Post) (*Models.Post, error) {
+func (s *postService) UpdatePost(id uint, post *Models.Post) error {
 	_, err := s.postRepository.GetPostById(id)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	res, err := s.postRepository.UpdatePost(id, post)
+	err = s.postRepository.UpdatePost(id, post)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return res, err
+	return err
 }
 
 func (s *postService) DeletePost(id uint) error {
