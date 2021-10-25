@@ -51,7 +51,12 @@ func userCreate(userService services.UserService) gin.HandlerFunc {
 func userGet(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Params.ByName("id")
+
 		userId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request", "error": err.Error()})
+			return
+		}
 
 		res, err := userService.GetUserByID(uint(userId))
 
@@ -66,14 +71,20 @@ func userGet(userService services.UserService) gin.HandlerFunc {
 func userUpdate(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user *Models.User
-		id := c.Params.ByName("id")
 
-		err := c.BindJSON(&user)
+		id := c.Params.ByName("id")
+		userId, err := strconv.ParseUint(id, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request", "error": err.Error()})
+			return
 		}
 
-		userId, err := strconv.ParseUint(id, 10, 64)
+		err = c.BindJSON(&user)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request", "error": err.Error()})
+			return
+		}
+
 		err = userService.UpdateUser(uint(userId), user)
 
 		if err != nil {
@@ -88,7 +99,12 @@ func userUpdate(userService services.UserService) gin.HandlerFunc {
 func userDelete(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Params.ByName("id")
+
 		userId, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request", "error": err.Error()})
+			return
+		}
 
 		err = userService.DeleteUser(uint(userId))
 		if err != nil {
