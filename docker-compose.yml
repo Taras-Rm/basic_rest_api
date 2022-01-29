@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  app:
+    build: ./
+    command: ./goapi
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+  
+  db:
+    restart: always
+    image: postgres
+    ports:
+     - 5437:5432
+    
+    environment:
+      POSTGRES_DB: "goapi"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "post1235"
+    
+    volumes:
+      - database-goapi-data:/var/lib/postgresql/data/
+
+volumes:
+  database-goapi-data:

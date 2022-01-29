@@ -2,4 +2,4 @@ app:
   username: "postgres"
   pass: "post1235"
   dbname: "goapi"
-  host: "localhost"
+  host: "db"
